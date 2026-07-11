@@ -1,11 +1,15 @@
 import httpx
 import pytest
 
-from app.main import create_app
+from market_data_insights_api.core.config import get_settings
+from market_data_insights_api.main import create_app
 
 
 @pytest.mark.anyio
-async def test_health_check_returns_service_status() -> None:
+async def test_health_check_returns_service_status(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("ENVIRONMENT", "local")
+    get_settings.cache_clear()
+
     transport = httpx.ASGITransport(app=create_app())
 
     async with httpx.AsyncClient(transport=transport, base_url="http://test") as client:
@@ -18,3 +22,5 @@ async def test_health_check_returns_service_status() -> None:
         "version": "0.1.0",
         "environment": "local",
     }
+
+    get_settings.cache_clear()

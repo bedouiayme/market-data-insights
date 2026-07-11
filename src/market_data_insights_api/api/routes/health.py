@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.core.config import get_settings
+from market_data_insights_api.core.config import get_settings
 
 router = APIRouter(tags=["health"])
 

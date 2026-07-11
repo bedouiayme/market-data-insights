@@ -1,7 +1,11 @@
-from app.core.config import Settings
+import pytest
+
+from market_data_insights_api.core.config import Settings
 
 
-def test_settings_defaults() -> None:
+def test_settings_defaults(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("ENVIRONMENT", "local")
+
     settings = Settings()
 
     assert settings.app_name == "Market Data Insights API"

@@ -5,7 +5,7 @@ install:
 	python -m pip install ".[dev]"
 
 run:
-	uvicorn app.main:app --reload
+	uvicorn market_data_insights_api.main:app --reload
 
 test:
 	pytest

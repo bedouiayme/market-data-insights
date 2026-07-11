@@ -7,12 +7,28 @@ Sprint 1 delivers the foundation:
 - FastAPI application skeleton
 - `/health` endpoint
 - central configuration with environment variables
+- professional `src/` package layout
 - PostgreSQL service with Docker Compose
 - automated tests with pytest
 - lint configuration with Ruff
 - CI workflow with GitHub Actions
 
 ## Why This Architecture
+
+This project uses a `src/` layout so the application code is separated from project configuration, tests, Docker files, and documentation.
+
+The importable Python package is named `market_data_insights_api`, which is more explicit than a generic package name like `app`.
+
+The code is split into layers:
+
+- `api`: HTTP routes exposed by FastAPI
+- `core`: application configuration and shared runtime settings
+- `db`: database connection and persistence setup
+- `models`: SQLAlchemy database models
+- `schemas`: Pydantic request and response schemas
+- `services`: business logic
+- `ingestion`: market data ingestion workflows
+- `utils`: small shared helpers
 
 FastAPI is used because it is a modern Python web framework with strong typing, automatic OpenAPI documentation, and excellent test ergonomics.
 
@@ -28,24 +44,32 @@ GitHub Actions is included from the beginning to show a production-minded CI/CD 
 
 ```text
 market-data-insights-api/
-├── app/
-│   ├── main.py
-│   ├── api/
-│   │   └── routes/
-│   │       └── health.py
-│   └── core/
-│       └── config.py
-├── tests/
-│   ├── test_config.py
-│   └── test_health.py
-├── .github/
-│   └── workflows/
-│       └── ci.yml
-├── Dockerfile
-├── docker-compose.yml
-├── pyproject.toml
-├── Makefile
-└── README.md
+|-- src/
+|   `-- market_data_insights_api/
+|       |-- __init__.py
+|       |-- main.py
+|       |-- api/
+|       |   `-- routes/
+|       |       `-- health.py
+|       |-- core/
+|       |   `-- config.py
+|       |-- db/
+|       |-- ingestion/
+|       |-- models/
+|       |-- schemas/
+|       |-- services/
+|       `-- utils/
+|-- tests/
+|   |-- test_config.py
+|   `-- test_health.py
+|-- .github/
+|   `-- workflows/
+|       `-- ci.yml
+|-- Dockerfile
+|-- docker-compose.yml
+|-- pyproject.toml
+|-- Makefile
+`-- README.md
 ```
 
 ## Requirements
@@ -66,7 +90,7 @@ python -m pip install ".[dev]"
 Run the API locally:
 
 ```bash
-uvicorn app.main:app --reload
+uvicorn market_data_insights_api.main:app --reload
 ```
 
 Open:
