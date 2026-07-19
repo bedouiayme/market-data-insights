@@ -4,8 +4,8 @@ services:
       context: .
     container_name: market-data-insights-api
     environment:
-      ENVIRONMENT: local
-      DATABASE_URL: postgresql+psycopg://market_user:market_password@postgres:5432/market_data
+      ENVIRONMENT: ${ENVIRONMENT:-local}
+      DATABASE_URL: ${DATABASE_URL}
     ports:
       - "8000:8000"
     depends_on:
@@ -16,9 +16,9 @@ services:
     image: postgres:16-alpine
     container_name: market-data-insights-postgres
     environment:
-      POSTGRES_USER: market_user
-      POSTGRES_PASSWORD: market_password
-      POSTGRES_DB: market_data
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5432:5432"
     volumes:
