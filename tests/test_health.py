@@ -1,5 +1,6 @@
 import httpx
 import pytest
+
 from market_data_insights_api.core.config import get_settings
 from market_data_insights_api.main import create_app
 

@@ -1,4 +1,5 @@
 import pytest
+
 from market_data_insights_api.core.config import Settings
 
 

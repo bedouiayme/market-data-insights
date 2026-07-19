@@ -1,6 +1,7 @@
+from sqlalchemy import ForeignKeyConstraint, UniqueConstraint
+
 from market_data_insights_api.db import Base
 from market_data_insights_api.models import Asset, Price
-from sqlalchemy import ForeignKeyConstraint, UniqueConstraint
 
 
 def test_asset_and_price_tables_are_registered() -> None:
