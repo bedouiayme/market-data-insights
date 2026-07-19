@@ -1,7 +1,6 @@
-from sqlalchemy import ForeignKeyConstraint, UniqueConstraint
-
 from market_data_insights_api.db import Base
 from market_data_insights_api.models import Asset, Price
+from sqlalchemy import ForeignKeyConstraint, UniqueConstraint
 
 
 def test_asset_and_price_tables_are_registered() -> None:
@@ -27,7 +26,6 @@ def test_price_model_links_to_asset_and_prevents_duplicate_timestamps() -> None:
         for constraint in constraints
     )
     assert any(
-        isinstance(constraint, UniqueConstraint)
-        and constraint.name == "uq_prices_asset_timestamp"
+        isinstance(constraint, UniqueConstraint) and constraint.name == "uq_prices_asset_timestamp"
         for constraint in constraints
     )
