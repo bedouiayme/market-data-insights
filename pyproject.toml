@@ -5,6 +5,7 @@ description = "FastAPI service for market data ingestion and financial insights.
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "alembic>=1.14.0,<2.0.0",
     "fastapi>=0.115.0,<1.0.0",
     "pydantic-settings>=2.6.0,<3.0.0",
     "psycopg[binary]>=3.2.0,<4.0.0",
