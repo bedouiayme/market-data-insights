@@ -1,7 +1,11 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from market_data_insights_api.ingestion import YahooFinanceClient, YahooFinanceMarketData
+from market_data_insights_api.ingestion import (
+    MarketDataAsset,
+    YahooFinanceClient,
+    YahooFinanceMarketData,
+)
 from market_data_insights_api.models import Asset
 
 
@@ -36,3 +40,23 @@ class PriceIngestionService:
         statement = select(Asset).where(Asset.symbol == normalized_symbol)
 
         return self._db_session.execute(statement).scalar_one_or_none()
+
+    def _get_or_create_asset(self, market_data_asset: MarketDataAsset) -> Asset:
+        if self._db_session is None:
+            raise RuntimeError("database session is required to persist assets")
+
+        existing_asset = self._get_asset_by_symbol(market_data_asset.symbol)
+        if existing_asset is not None:
+            return existing_asset
+
+        asset = Asset(
+            symbol=market_data_asset.symbol,
+            name=market_data_asset.name,
+            asset_type=market_data_asset.asset_type,
+            currency=market_data_asset.currency,
+            exchange=market_data_asset.exchange,
+        )
+        self._db_session.add(asset)
+        self._db_session.flush()
+
+        return asset

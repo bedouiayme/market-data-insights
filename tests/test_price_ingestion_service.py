@@ -125,3 +125,30 @@ def test_get_asset_by_symbol_returns_none_when_asset_does_not_exist() -> None:
 
     assert service._get_asset_by_symbol(SAMPLE_ASSET_SYMBOL) is None
     db_session.execute.assert_called_once()
+
+
+def test_get_or_create_asset_returns_existing_asset() -> None:
+    sample_asset = build_sample_asset_model()
+    db_session = build_db_session_mock(asset=sample_asset)
+    service = PriceIngestionService(db_session=db_session)
+
+    asset = service._get_or_create_asset(build_sample_market_data().asset)
+
+    assert asset is sample_asset
+    db_session.add.assert_not_called()
+    db_session.flush.assert_not_called()
+
+
+def test_get_or_create_asset_creates_asset_when_missing() -> None:
+    db_session = build_db_session_mock(asset=None)
+    service = PriceIngestionService(db_session=db_session)
+
+    asset = service._get_or_create_asset(build_sample_market_data().asset)
+
+    assert asset.symbol == SAMPLE_ASSET_SYMBOL
+    assert asset.name == SAMPLE_ASSET_NAME
+    assert asset.asset_type == SAMPLE_ASSET_TYPE
+    assert asset.currency == SAMPLE_ASSET_CURRENCY
+    assert asset.exchange == SAMPLE_ASSET_EXCHANGE
+    db_session.add.assert_called_once_with(asset)
+    db_session.flush.assert_called_once()
