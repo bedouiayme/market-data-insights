@@ -8,10 +8,12 @@ from market_data_insights_api.ingestion import (
     YahooFinanceClient,
     YahooFinanceMarketData,
 )
+from market_data_insights_api.models import Asset
 from market_data_insights_api.services import PriceIngestionService
 
 SAMPLE_ASSET_SYMBOL = "AAPL"
 SAMPLE_ASSET_NAME = "Apple Inc."
+SAMPLE_ASSET_TYPE = "equity"
 SAMPLE_ASSET_CURRENCY = "USD"
 SAMPLE_ASSET_EXCHANGE = "NMS"
 SAMPLE_PRICE_TIMESTAMP = datetime(2026, 8, 8, tzinfo=UTC)
@@ -47,6 +49,26 @@ def build_sample_market_data() -> YahooFinanceMarketData:
     )
 
 
+def build_sample_asset_model() -> Asset:
+    return Asset(
+        symbol=SAMPLE_ASSET_SYMBOL,
+        name=SAMPLE_ASSET_NAME,
+        asset_type=SAMPLE_ASSET_TYPE,
+        currency=SAMPLE_ASSET_CURRENCY,
+        exchange=SAMPLE_ASSET_EXCHANGE,
+    )
+
+
+def build_db_session_mock(asset: Asset | None) -> Mock:
+    execute_result = Mock()
+    execute_result.scalar_one_or_none.return_value = asset
+
+    db_session = Mock()
+    db_session.execute.return_value = execute_result
+
+    return db_session
+
+
 def test_fetch_market_data_receives_data_from_yahoo_finance_client() -> None:
     sample_market_data = build_sample_market_data()
     market_data_client = Mock()
@@ -80,3 +102,26 @@ def test_fetch_market_data_uses_default_period_and_interval() -> None:
         period=SAMPLE_DEFAULT_PERIOD,
         interval=SAMPLE_DEFAULT_INTERVAL,
     )
+
+
+def test_get_asset_by_symbol_returns_existing_asset() -> None:
+    sample_asset = build_sample_asset_model()
+    db_session = build_db_session_mock(asset=sample_asset)
+    service = PriceIngestionService(db_session=db_session)
+
+    asset = service._get_asset_by_symbol(" aapl ")
+
+    assert asset is sample_asset
+    db_session.execute.assert_called_once()
+
+    statement = db_session.execute.call_args.args[0]
+    compiled_statement = str(statement.compile(compile_kwargs={"literal_binds": True}))
+    assert SAMPLE_ASSET_SYMBOL in compiled_statement
+
+
+def test_get_asset_by_symbol_returns_none_when_asset_does_not_exist() -> None:
+    db_session = build_db_session_mock(asset=None)
+    service = PriceIngestionService(db_session=db_session)
+
+    assert service._get_asset_by_symbol(SAMPLE_ASSET_SYMBOL) is None
+    db_session.execute.assert_called_once()
