@@ -5,10 +5,10 @@ from unittest.mock import Mock
 from market_data_insights_api.ingestion import (
     MarketDataAsset,
     MarketDataPrice,
+    YahooFinanceClient,
     YahooFinanceMarketData,
 )
 from market_data_insights_api.services import PriceIngestionService
-from market_data_insights_api.ingestion import YahooFinanceClient
 
 SAMPLE_ASSET_SYMBOL = "AAPL"
 SAMPLE_ASSET_NAME = "Apple Inc."
