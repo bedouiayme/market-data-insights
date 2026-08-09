@@ -116,8 +116,7 @@ class YahooFinanceClient:
     @classmethod
     def _has_missing_price_fields(cls, row: Any) -> bool:
         return any(
-            cls._is_missing(row[column])
-            for column in ("Open", "High", "Low", "Close", "Volume")
+            cls._is_missing(row[column]) for column in ("Open", "High", "Low", "Close", "Volume")
         )
 
     @staticmethod
